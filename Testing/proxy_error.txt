@@ -1,0 +1,1 @@
+https://www.javahelps.com/2015/08/set-proxy-for-maven-in-eclipse.html
