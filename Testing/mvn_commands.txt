@@ -1,0 +1,30 @@
+https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html
+
+mvn clean         - cleans up artifacts created by prior builds
+mvn clean install
+mvn site          - generates site documentation for this project
+mvn compile
+
+Executing Build Phases
+You can execute a build phase located inside a build life cycle by passing
+the name of the build phase to the Maven command. Here are a few build phase
+command examples:
+
+  mvn pre-clean
+  mvn compile
+  mvn package
+
+Maven will find out what build life cycle the specified build phase belongs to,
+so you don't need to explicitly specify which build life cyle the build phase
+belongs to.
+
+Common Maven Commands
+Here is a list of common Maven commands plus a description of what they do:
+
+Maven Command	Description
+mvn clean	Clears the target directory into which Maven normally builds
+                your project.
+mvn package	Builds the project and packages the resulting JAR file into the
+                target directory.
+mvn install	Builds the project described by your Maven POM file and installs
+                the resulting artifact (JAR) into your local Maven repository
