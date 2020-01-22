@@ -1,0 +1,9 @@
+bankomat.NoteModule200
+bankomat.NoteModule
+bankomat.NoteModule100
+bankomat.BankomatApp
+bankomat.Note
+bankomat.NoteModule500
+bankomat.Money
+bankomat.NoteModule1000
+bankomat.NoteModule50
