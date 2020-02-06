@@ -51,7 +51,8 @@ public class Arr {
         }
         
         System.out.println(Arrays.toString(even));
-        System.out.println(Arrays.toString(coord));
+        System.out.println(Arrays.toString(coord)); // [[I@15db9742, [I@6d06d69c, [I@7852e922, [I@4e25154f, [I@70dea4e, [I@5c647
+        System.out.println(Arrays.deepToString(coord));  // [[0, 1, 36, 9, 16, 25, 36], [0, 42, 6, 12, 20, 30, 42], 
         
         for(int[] arr: coord){
             System.out.println(Arrays.toString(arr));
