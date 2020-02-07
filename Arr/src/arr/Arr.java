@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package arr;
 import java.util.Arrays;
 /**
@@ -57,6 +52,77 @@ public class Arr {
         for(int[] arr: coord){
             System.out.println(Arrays.toString(arr));
         }
+        
+        int[] arr_inv = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        
+        invert(arr_inv);
+        System.out.println(Arrays.toString(arr_inv));
+        
+        invertRecurs(arr_inv, 0);
+        System.out.println(Arrays.toString(arr_inv));
+        
+        firstToLast(arr_inv);
+        System.out.println(Arrays.toString(arr_inv));
+        
+        lastToFirst(arr_inv);
+        System.out.println(Arrays.toString(arr_inv));
+        
+        String str = "abcdefgh";
+        String inv_str = invertStr(str);
+        System.out.println(inv_str);
+        
+        
+    }
+    
+    public static void invert(int[] data) {
+        for (int i = 0; i < data.length / 2; i++) {
+            int temp = data[i];
+            data[i] = data[data.length - 1 - i];
+            data[data.length - 1 - i] = temp;
+        }
+    }
+    
+    public static void invertRecurs(int[] data, int i) {
+        if (i < data.length / 2) {
+            int temp = data[i];
+            data[i] = data[data.length - 1 - i];
+            data[data.length - 1 - i] = temp;
+            invertRecurs(data, i + 1);
+        }
+    }
+    
+    public static void firstToLast(int[] data) {
+        for (int i = 0; i < data.length - 1; i++) {
+            int temp = data[i];
+            data[i] = data[i + 1];
+            data[i + 1] = temp;
+        }
+    }
+    
+    public static void lastToFirst(int[] data) {
+        for (int i = data.length - 1; i > 0; i--) {
+            int temp = data[i];
+            data[i] = data[i - 1];
+            data[i - 1] = temp;
+        }
+    }
+    
+    public static void conditionalSwap(int[] data, int lhv, int rhv) {
+        if (data[lhv] > data[rhv]) {
+            int temp = data[lhv];
+            data[lhv] = data[rhv];
+            data[rhv] = temp;
+        }
+    }
+    
+    public static String invertStr(String data) {
+        char[] chars = data.toCharArray();
+        for (int i = 0; i < chars.length / 2; ++i) {
+            char temp = chars[i];
+            chars[i] = chars[chars.length - 1 - i];
+            chars[chars.length - 1 - i] = temp;
+        }
+        return new String(chars);
     }
     
 }
