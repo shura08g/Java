@@ -73,12 +73,9 @@ class User {
         if (rankActivity < -8 || rankActivity == 0 || rankActivity > 8) {
             throw new IllegalArgumentException();
         } 
-        int different = 0;
-        if (rank < 1 && rankActivity < 1) different = rankActivity - rank;
-        if (rank > 0 && rankActivity > 0) different = rank - rankActivity;
+        int different = rankActivity - rank;
         if (rank < 0 && rankActivity > 0) different = rankActivity - rank - 1;
-        if (rank == -1 && rankActivity == 1) different = 1;
-        if (different <= -2) return;
+        if (different <= -2) different = -1;
         int tempProgress = 0;
         switch (different) {
             case 0:
@@ -92,36 +89,29 @@ class User {
                 break;
         }
         progress += tempProgress;
-        System.out.println(rank + ", " + progress + ", " + rankActivity + ", " + different);
+        //System.out.println(rank + ", " + progress + ", " + rankActivity + ", " + different);
+        if (rank == 8) progress = 0;
         if (progress >= 100) {
             int scale = progress / 100;
             switch (rank) {
                 case -1:
                     rank = 1 * scale;
                     progress -= 100 * scale;
+                    if (rank == 8) progress = 0;
                     break;
-                case 8:
-                    rank = 8;
-                    progress = 100;
-                    break;
+//                 case 8:
+//                     rank = 8;
+//                     progress = 0;
+//                     break;
                 default:
                     rank += 1 * scale;
                     if (rank == 0) rank = 1;
                     progress -= 100 * scale;
+                    if (rank == 8) progress = 0;
                     break;
             }
         }
     }
-//    
-//    public int getRank() {
-//        //System.out.println(rank);
-//        return rank;
-//    }
-//
-//    public int getProgress() {
-//        //System.out.println(progress);
-//        return progress;
-//    }
 }
 
 public class RankingSystem {
