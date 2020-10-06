@@ -23,105 +23,149 @@ six oxygen atoms.
 Note that brackets may be round, square or curly and can also be nested. Index 
 after the braces is optional.
 
-*/
-import java.util.Arrays;
+ */
 import java.util.Map;
 import java.util.HashMap;
 
 class ParseMolecule {
-    
-    public static Map<String,Integer> getAtoms(String formula) {
-        if (!Character.isUpperCase(formula.charAt(0))) throw new IllegalArgumentException();
-        Map<String,Integer> result = new HashMap<String,Integer>();
+
+    public static Map<String, Integer> getAtoms(String formula) {
+        if (!Character.isUpperCase(formula.charAt(0))) {
+            throw new IllegalArgumentException();
+        }
+        Map<String, Integer> result = new HashMap<>();
+        String[] splitStr = parse(formula);
         int multiply = 1;
         boolean round_brekets = false;
         boolean square_brekets = false;
         boolean curly_brekets = false;
-        for (int i = 0; i < formula.length(); i++) {
-            char sym = formula.charAt(i);
-            char nextSym = ' ';
-            if (i != formula.length() - 1) {
-                nextSym = formula.charAt(i + 1);
-            }
-            if (sym == '(') {
-                int pos = formula.indexOf(")", i);
-                if (pos == -1) throw new IllegalArgumentException();
-                int square_pos = formula.indexOf("]");
-                int curly_pos = formula.indexOf("}");
-                if (!square_brekets && square_pos > pos) throw new IllegalArgumentException();
-                if (!curly_brekets && curly_pos > pos) throw new IllegalArgumentException();
-                if (pos < formula.length() - 1 && Character.isDigit(formula.charAt(pos + 1))) {
-                    multiply *= Integer.parseInt("" + formula.charAt(pos + 1));
-                } else {multiply = 1;}
-                round_brekets = true;
-            }
-            if (sym == '[') {
-                int pos = formula.indexOf("]", i);
-                if (pos == -1) throw new IllegalArgumentException();
-                int round_pos = formula.indexOf(")");
-                int curly_pos = formula.indexOf("}");
-                if (!round_brekets && round_pos > pos) throw new IllegalArgumentException();
-                if (!curly_brekets && curly_pos > pos) throw new IllegalArgumentException();
-                if (pos < formula.length() - 1 && Character.isDigit(formula.charAt(pos + 1))) {
-                    multiply *= Integer.parseInt("" + formula.charAt(pos + 1));
-                } else {multiply = 1;}
-                square_brekets = true;
-            }
-            if (sym == '{') {
-                int pos = formula.indexOf("}", i);
-                if (pos == -1) throw new IllegalArgumentException();
-                int square_pos = formula.indexOf("]");
-                int round_pos = formula.indexOf(")");
-                if (!square_brekets && square_pos > pos) throw new IllegalArgumentException();
-                if (!round_brekets && round_pos > pos) throw new IllegalArgumentException();
-                if (pos < formula.length() - 1 && Character.isDigit(formula.charAt(pos + 1))) {
-                    multiply *= Integer.parseInt("" + formula.charAt(pos + 1));
-                } else {multiply = 1;}
-                curly_brekets = true;
-            }
-            if (sym == ')' && !round_brekets) throw new IllegalArgumentException();
-            if (sym == ']' && !square_brekets) throw new IllegalArgumentException();
-            if (sym == '}' && !curly_brekets) throw new IllegalArgumentException();
-            
-
-            
-            if (Character.isUpperCase(sym)) {
-                if (Character.isUpperCase(nextSym) || nextSym == ' ' || nextSym == ')' || nextSym == ']' || nextSym == '}' || nextSym == ' ' || nextSym == '(' || nextSym == '[' || nextSym == '{') {
-                    result.put("" + sym, 1 * multiply);
-                }
-                if (Character.isDigit(nextSym)) {
-                    int digit = Integer.parseInt("" + nextSym);
-                    if (i < formula.length() - 2 && Character.isDigit(formula.charAt(i + 2))) {
-                        digit = Integer.parseInt("" + nextSym + formula.charAt(i + 2));
-                        i++;
+        boolean round_brekets_close = false;
+        boolean square_brekets_close = false;
+        boolean curly_brekets_close = false;
+        for (int i = 0; i < splitStr.length; i++) {
+            if (!isNumeric(splitStr[i]) && !isBracket(splitStr[i])) {
+                if (!result.containsKey(splitStr[i])) {
+                        result.put(splitStr[i], 0);
                     }
-                    if (!result.containsKey("" + sym)) {
-                        result.put("" + sym, 0 * multiply);
-                    }
-                    result.put("" + sym, result.get("" + sym) + digit * multiply);
-                }
-                if (Character.isLowerCase(nextSym)) {
-                    int digit = 1;
-                    if (i < formula.length() - 2 && Character.isDigit(formula.charAt(i + 2))) {
-                        digit = Integer.parseInt("" + formula.charAt(i + 2));
-                        i++;
-                    }
-                    result.put("" + sym + nextSym , 1 * multiply * digit );
-                    i++;
+                if (i < splitStr.length - 1 && isNumeric(splitStr[i + 1])) {
+                    int digit = Integer.parseInt(splitStr[i + 1]);
+                    result.put(splitStr[i], result.get(splitStr[i]) + digit * multiply);
+                } else {
+                    result.put(splitStr[i], result.get(splitStr[i]) + 1 * multiply);
                 }
             }
-            System.out.println(result + " " + sym + " " + nextSym + " " + multiply);
+            if (splitStr[i].equals("(") || splitStr[i].equals("[") || splitStr[i].equals("{")) {
+                if (splitStr[i].equals("(")) round_brekets = true;
+                if (splitStr[i].equals("[")) square_brekets = true;
+                if (splitStr[i].equals("{")) curly_brekets = true;
+                int index = findCloseBracket(splitStr, splitStr[i]);
+                if (i < splitStr.length && isNumeric(splitStr[index + 1])) {
+                    multiply *= Integer.parseInt(splitStr[index + 1]);
+                } else multiply = 1;
+            }
+            if (splitStr[i].equals(")") || splitStr[i].equals("]") || splitStr[i].equals("}")) {
+                if (splitStr[i].equals(")")) round_brekets_close = true;
+                if (splitStr[i].equals("]")) square_brekets_close = true;
+                if (splitStr[i].equals("}")) curly_brekets_close = true;
+                if (splitStr[i].equals(")") && !round_brekets) throw new IllegalArgumentException();
+                if (splitStr[i].equals("]") && !square_brekets) throw new IllegalArgumentException();
+                if (splitStr[i].equals("}") && !curly_brekets) throw new IllegalArgumentException();
+                multiply = 1;
+            }
         }
+
         return result;
     }
-    
-    static void parse(Map<String,Integer> map, String str) {
-        //String[] splitStr = str.split("(?=[A-Z])");
-        String[] splitStr = str.split("(?=[A-Z][a-z]*)([0-9]*)");
-        System.out.println(Arrays.asList(splitStr));
+
+    static String[] parse(String str) {
+        StringBuilder newStr = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            if (Character.isUpperCase(str.charAt(i))) {
+                if (i < str.length() - 1 && Character.isLowerCase(str.charAt(i + 1))) {
+                    newStr.append(str.charAt(i)).append(str.charAt(i + 1)).append(":");
+                    i++;
+                } else {
+                    newStr.append(str.charAt(i)).append(":");
+                }
+            }
+            if (Character.isDigit(str.charAt(i))) {
+                if (i < str.length() - 1 && Character.isDigit(str.charAt(i + 1))) {
+                    newStr.append(str.charAt(i)).append(str.charAt(i + 1)).append(":");
+                    i++;
+                } else {
+                    newStr.append(str.charAt(i)).append(":");
+                }
+            }
+            if (str.charAt(i) == '(' || str.charAt(i) == ')' || str.charAt(i) == '[' || str.charAt(i) == ']' || str.charAt(i) == '{' || str.charAt(i) == '}') {
+                newStr.append(str.charAt(i)).append(":");
+            }
+        }
+        String result = newStr.toString();
+        String[] splitStr = result.split(":");
+        return splitStr;
     }
-    
-    
+
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            int num = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isBracket(String str) {
+        String[] pattern = {"(", "[", "{", ")", "]", "}"};
+        for (String p : pattern) {
+            if (p.equals(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int findCloseBracket(String[] arrStr, String bracket) {
+        int start = 0;
+        int finish = 0;
+        if ("(".equals(bracket)) {
+            for (int i = 0; i < arrStr.length; i++) {
+                if ("(".equals(arrStr[i])) {
+                    start = i;
+                }
+                if (")".equals(arrStr[i])) {
+                    finish = i;
+                }
+            }
+        }
+        if ("[".equals(bracket)) {
+            for (int i = 0; i < arrStr.length; i++) {
+                if ("[".equals(arrStr[i])) {
+                    start = i;
+                }
+                if ("]".equals(arrStr[i])) {
+                    finish = i;
+                }
+            }
+        }
+        if ("{".equals(bracket)) {
+            for (int i = 0; i < arrStr.length; i++) {
+                if ("{".equals(arrStr[i])) {
+                    start = i;
+                }
+                if ("}".equals(arrStr[i])) {
+                    finish = i;
+                }
+            }
+        }
+        if (finish < start) {
+            throw new IllegalArgumentException();
+        }
+        return finish;
+    }
+
     public static void main(String[] args) {
 //        System.out.println("H2O");
 //        System.out.println(ParseMolecule.getAtoms("H2O"));  // {H=2, O=1}
@@ -131,12 +175,13 @@ class ParseMolecule {
 //        System.out.println(ParseMolecule.getAtoms("K4[ON(SO3)2]2"));  // {S=4, K=4, N=2, O=14}
 //        System.out.println("C6H12O6");
 //        System.out.println(ParseMolecule.getAtoms("C6H12O6"));  // {C=6, H=12, O=6}
-        System.out.println("As2{Be4C5[BCo3(CO2)3]2}4Cu5  {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}");
-        System.out.println(ParseMolecule.getAtoms("As2{Be4C5[BCo3(CO2)3]2}4Cu5"));  // {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}
-        System.out.println("C2H2(COOH)2");
-        System.out.println(ParseMolecule.getAtoms("C2H2(COOH)2")); // {C=4, H=4, O=4}
-//        System.out.println(ParseMolecule.getAtoms("pie"));
-//        System.out.println("Au5(C2H5[OH)3Li]3");
-//        System.out.println(ParseMolecule.getAtoms("Au5(C2H5[OH)3Li]3"));
+//        System.out.println("As2{Be4C5[BCo3(CO2)3]2}4Cu5  {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}");
+//        System.out.println(ParseMolecule.getAtoms("As2{Be4C5[BCo3(CO2)3]2}4Cu5"));  // {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}
+//        System.out.println("C2H2(COOH)2");
+//        System.out.println(ParseMolecule.getAtoms("C2H2(COOH)2")); // {C=4, H=4, O=4}
+//        System.out.println(ParseMolecule.getAtoms("pie")); //IllegalArgumentException
+//        System.out.println(ParseMolecule.getAtoms("MgOH)2")); //IllegalArgumentException
+        System.out.println("Au5(C2H5[OH)3Li]3");
+        System.out.println(ParseMolecule.getAtoms("Au5(C2H5[OH)3Li]3")); // IllegalArgumentException
     }
 }
