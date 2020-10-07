@@ -24,8 +24,10 @@ Note that brackets may be round, square or curly and can also be nested. Index
 after the braces is optional.
 
  */
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 class ParseMolecule {
 
@@ -35,18 +37,14 @@ class ParseMolecule {
         }
         Map<String, Integer> result = new HashMap<>();
         String[] splitStr = parse(formula);
+        chekStr(splitStr);
         int multiply = 1;
-        boolean round_brekets = false;
-        boolean square_brekets = false;
-        boolean curly_brekets = false;
-        boolean round_brekets_close = false;
-        boolean square_brekets_close = false;
-        boolean curly_brekets_close = false;
+
         for (int i = 0; i < splitStr.length; i++) {
             if (!isNumeric(splitStr[i]) && !isBracket(splitStr[i])) {
                 if (!result.containsKey(splitStr[i])) {
-                        result.put(splitStr[i], 0);
-                    }
+                    result.put(splitStr[i], 0);
+                }
                 if (i < splitStr.length - 1 && isNumeric(splitStr[i + 1])) {
                     int digit = Integer.parseInt(splitStr[i + 1]);
                     result.put(splitStr[i], result.get(splitStr[i]) + digit * multiply);
@@ -55,26 +53,72 @@ class ParseMolecule {
                 }
             }
             if (splitStr[i].equals("(") || splitStr[i].equals("[") || splitStr[i].equals("{")) {
-                if (splitStr[i].equals("(")) round_brekets = true;
-                if (splitStr[i].equals("[")) square_brekets = true;
-                if (splitStr[i].equals("{")) curly_brekets = true;
                 int index = findCloseBracket(splitStr, splitStr[i]);
                 if (i < splitStr.length && isNumeric(splitStr[index + 1])) {
                     multiply *= Integer.parseInt(splitStr[index + 1]);
-                } else multiply = 1;
+                } else {
+                    multiply = 1;
+                }
             }
             if (splitStr[i].equals(")") || splitStr[i].equals("]") || splitStr[i].equals("}")) {
-                if (splitStr[i].equals(")")) round_brekets_close = true;
-                if (splitStr[i].equals("]")) square_brekets_close = true;
-                if (splitStr[i].equals("}")) curly_brekets_close = true;
-                if (splitStr[i].equals(")") && !round_brekets) throw new IllegalArgumentException();
-                if (splitStr[i].equals("]") && !square_brekets) throw new IllegalArgumentException();
-                if (splitStr[i].equals("}") && !curly_brekets) throw new IllegalArgumentException();
                 multiply = 1;
             }
         }
 
         return result;
+    }
+
+    static void chekStr(String[] str) {
+        List<String> brekets = new ArrayList<>();
+        final int MIN = -1;
+        for (String s : str) {
+            if (s.equals("(") || s.equals(")") || s.equals("[") || s.equals("]") || s.equals("{") || s.equals("}")){
+                brekets.add(s);
+            }
+        }
+        if ((brekets.contains("(") && !brekets.contains(")")) || (brekets.contains(")") && !brekets.contains("("))) throw new IllegalArgumentException();
+        if ((brekets.contains("[") && !brekets.contains("]")) || (brekets.contains("]") && !brekets.contains("["))) throw new IllegalArgumentException();
+        if ((brekets.contains("{") && !brekets.contains("}")) || (brekets.contains("}") && !brekets.contains("{"))) throw new IllegalArgumentException();
+        int round_s_index = MIN, round_e_index = MIN;
+        int square_s_index = MIN, square_e_index = MIN;
+        int curly_s_index = MIN, curly_e_index = MIN;
+        if (brekets.contains("(")) {
+            round_s_index = brekets.indexOf("(");
+            round_e_index = brekets.indexOf(")");
+            if (round_e_index < round_s_index) throw new IllegalArgumentException();
+        }
+        if (brekets.contains("[")) {
+            square_s_index = brekets.indexOf("[");
+            square_e_index = brekets.indexOf("]");
+            if (square_e_index < square_s_index) throw new IllegalArgumentException();
+        }
+        if (brekets.contains("{")) {
+            curly_s_index = brekets.indexOf("{");
+            curly_e_index = brekets.indexOf("}");
+            if (curly_e_index < curly_s_index) throw new IllegalArgumentException();
+        }
+        //System.out.println(round_s_index + " " + round_e_index + " " + square_s_index + " " + square_e_index + " " + curly_s_index + " " + curly_e_index);
+        if (round_s_index > MIN && square_s_index > MIN) {
+            if (round_s_index < square_s_index) {
+                if (round_e_index < square_e_index)  throw new IllegalArgumentException();
+            } else if (square_s_index < round_s_index) {
+                if (round_e_index > square_e_index)  throw new IllegalArgumentException();
+            }
+        }
+        if (round_s_index > MIN && curly_s_index > MIN) {
+            if (round_s_index < curly_s_index) {
+                if (round_e_index < curly_e_index)  throw new IllegalArgumentException();
+            } else if (curly_s_index < round_s_index) {
+                if (round_e_index > curly_e_index)  throw new IllegalArgumentException();
+            }
+        }
+        if (square_s_index > MIN && curly_s_index > MIN) {
+            if (square_s_index < curly_s_index) {
+                if (square_e_index < curly_e_index)  throw new IllegalArgumentException();
+            } else if (square_s_index < round_s_index) {
+                if (square_e_index > curly_e_index)  throw new IllegalArgumentException();
+            }
+        }
     }
 
     static String[] parse(String str) {
@@ -167,21 +211,21 @@ class ParseMolecule {
     }
 
     public static void main(String[] args) {
-//        System.out.println("H2O");
-//        System.out.println(ParseMolecule.getAtoms("H2O"));  // {H=2, O=1}
-//        System.out.println("Mg(OH)2");
-//        System.out.println(ParseMolecule.getAtoms("Mg(OH)2"));  // {H=2, Mg=1, O=2}
-//        System.out.println("K4[ON(SO3)2]2");
-//        System.out.println(ParseMolecule.getAtoms("K4[ON(SO3)2]2"));  // {S=4, K=4, N=2, O=14}
-//        System.out.println("C6H12O6");
-//        System.out.println(ParseMolecule.getAtoms("C6H12O6"));  // {C=6, H=12, O=6}
-//        System.out.println("As2{Be4C5[BCo3(CO2)3]2}4Cu5  {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}");
-//        System.out.println(ParseMolecule.getAtoms("As2{Be4C5[BCo3(CO2)3]2}4Cu5"));  // {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}
-//        System.out.println("C2H2(COOH)2");
-//        System.out.println(ParseMolecule.getAtoms("C2H2(COOH)2")); // {C=4, H=4, O=4}
+        System.out.println("H2O");
+        System.out.println(ParseMolecule.getAtoms("H2O"));  // {H=2, O=1}
+        System.out.println("Mg(OH)2");
+        System.out.println(ParseMolecule.getAtoms("Mg(OH)2"));  // {H=2, Mg=1, O=2}
+        System.out.println("K4[ON(SO3)2]2");
+        System.out.println(ParseMolecule.getAtoms("K4[ON(SO3)2]2"));  // {S=4, K=4, N=2, O=14}
+        System.out.println("C6H12O6");
+        System.out.println(ParseMolecule.getAtoms("C6H12O6"));  // {C=6, H=12, O=6}
+        System.out.println("As2{Be4C5[BCo3(CO2)3]2}4Cu5  {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}");
+        System.out.println(ParseMolecule.getAtoms("As2{Be4C5[BCo3(CO2)3]2}4Cu5"));  // {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}
+        System.out.println("C2H2(COOH)2");
+        System.out.println(ParseMolecule.getAtoms("C2H2(COOH)2")); // {C=4, H=4, O=4}
 //        System.out.println(ParseMolecule.getAtoms("pie")); //IllegalArgumentException
-//        System.out.println(ParseMolecule.getAtoms("MgOH)2")); //IllegalArgumentException
-        System.out.println("Au5(C2H5[OH)3Li]3");
-        System.out.println(ParseMolecule.getAtoms("Au5(C2H5[OH)3Li]3")); // IllegalArgumentException
+//          System.out.println(ParseMolecule.getAtoms("MgOH)2")); //IllegalArgumentException
+//        System.out.println("Au5(C2H5[OH)3Li]3");
+//        System.out.println(ParseMolecule.getAtoms("Au5(C2H5[OH)3Li]3")); // IllegalArgumentException
     }
 }
