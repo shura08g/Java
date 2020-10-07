@@ -32,7 +32,7 @@ import java.util.List;
 class ParseMolecule {
 
     public static Map<String, Integer> getAtoms(String formula) {
-        if (!Character.isUpperCase(formula.charAt(0))) {
+        if (Character.isLowerCase(formula.charAt(0))) {
             throw new IllegalArgumentException();
         }
         Map<String, Integer> result = new HashMap<>();
@@ -211,21 +211,26 @@ class ParseMolecule {
     }
 
     public static void main(String[] args) {
-        System.out.println("H2O");
-        System.out.println(ParseMolecule.getAtoms("H2O"));  // {H=2, O=1}
-        System.out.println("Mg(OH)2");
-        System.out.println(ParseMolecule.getAtoms("Mg(OH)2"));  // {H=2, Mg=1, O=2}
-        System.out.println("K4[ON(SO3)2]2");
-        System.out.println(ParseMolecule.getAtoms("K4[ON(SO3)2]2"));  // {S=4, K=4, N=2, O=14}
-        System.out.println("C6H12O6");
-        System.out.println(ParseMolecule.getAtoms("C6H12O6"));  // {C=6, H=12, O=6}
-        System.out.println("As2{Be4C5[BCo3(CO2)3]2}4Cu5  {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}");
-        System.out.println(ParseMolecule.getAtoms("As2{Be4C5[BCo3(CO2)3]2}4Cu5"));  // {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}
-        System.out.println("C2H2(COOH)2");
-        System.out.println(ParseMolecule.getAtoms("C2H2(COOH)2")); // {C=4, H=4, O=4}
+//        System.out.println("H2O");
+//        System.out.println(ParseMolecule.getAtoms("H2O"));  // {H=2, O=1}
+//        System.out.println("Mg(OH)2");
+//        System.out.println(ParseMolecule.getAtoms("Mg(OH)2"));  // {H=2, Mg=1, O=2}
+//        System.out.println("K4[ON(SO3)2]2");
+//        System.out.println(ParseMolecule.getAtoms("K4[ON(SO3)2]2"));  // {S=4, K=4, N=2, O=14}
+//        System.out.println("C6H12O6");
+//        System.out.println(ParseMolecule.getAtoms("C6H12O6"));  // {C=6, H=12, O=6}
+//        System.out.println("As2{Be4C5[BCo3(CO2)3]2}4Cu5  {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}");
+//        System.out.println(ParseMolecule.getAtoms("As2{Be4C5[BCo3(CO2)3]2}4Cu5"));  // {As=2, B=8, Cu=5, Be=16, C=44, Co=24, O=48}
+//        System.out.println("C2H2(COOH)2");
+//        System.out.println(ParseMolecule.getAtoms("C2H2(COOH)2")); // {C=4, H=4, O=4}
+        System.out.println("(C5H5)Fe(CO)2CH3");
+        System.out.println(ParseMolecule.getAtoms("(C5H5)Fe(CO)2CH3"));  // {C=8, H=8, Fe=1, O=2}> but was:<{C=13, H=13, Fe=1, O=2}
+//        System.out.println("{[Co(NH3)4(OH)2]3Co}(SO4)3");
+//        System.out.println(ParseMolecule.getAtoms("{[Co(NH3)4(OH)2]3Co}(SO4)3"));  // {S=3, H=42, Co=4, N=12, O=18}> but was:<{S=3, H=30, Co=4, N=9, O=15}
 //        System.out.println(ParseMolecule.getAtoms("pie")); //IllegalArgumentException
 //          System.out.println(ParseMolecule.getAtoms("MgOH)2")); //IllegalArgumentException
 //        System.out.println("Au5(C2H5[OH)3Li]3");
 //        System.out.println(ParseMolecule.getAtoms("Au5(C2H5[OH)3Li]3")); // IllegalArgumentException
     }
 }
+
