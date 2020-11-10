@@ -1,8 +1,10 @@
 package page;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -32,4 +34,16 @@ public class BasePage {
         assertTrue(driver.findElement(elementBy).isDisplayed());
     }
     
+    public void writeText(By elementBy, String text) {
+        waitVisibility(elementBy);
+        WebElement element = driver.findElement(elementBy);
+        element.clear();
+        element.sendKeys(text);
+    }
+    
+    //Is Element Not Displayed
+    public void isElementNotDisplayed(By elementBy) {
+        //waitVisibility(elementBy);
+        assertFalse(driver.findElements(elementBy).size() > 0);
+    }
 }
